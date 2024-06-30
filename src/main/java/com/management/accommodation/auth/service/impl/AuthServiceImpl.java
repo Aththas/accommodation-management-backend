@@ -11,6 +11,8 @@ import com.management.accommodation.config.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
     @Override
     public ResponseEntity<?> register(RegisterDto registerDto) {
         Optional<User> optionalUser = authRepository.findByEmail(registerDto.getEmail());
@@ -46,6 +49,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> authenticate(AuthDto authDto) {
-        return null;
+        Optional<User> optionalUser = authRepository.findByEmail(authDto.getEmail());
+        if(optionalUser.isPresent()){
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authDto.getEmail(),
+                            authDto.getPassword()
+                    )
+            );
+
+            User user = optionalUser.get();
+            final String accessToken = jwtService.generateAccessToken(user);
+
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setAccessToken(accessToken);
+
+            return new ResponseEntity<>(responseDto,HttpStatus.OK);
+
+        }
+        return new ResponseEntity<>("Authentication Failed",HttpStatus.UNAUTHORIZED);
     }
 }
