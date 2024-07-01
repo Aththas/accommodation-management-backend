@@ -14,7 +14,7 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String accessToken;
+    private String token;
 
     @Enumerated(EnumType.STRING)
     private TokenType tokenType;

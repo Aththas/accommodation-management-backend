@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -65,6 +66,7 @@ public class AuthServiceImpl implements AuthService {
 
             User user = optionalUser.get();
             final String accessToken = jwtService.generateAccessToken(user);
+            revokeAllValidTokens(user.getId());
             saveToken(accessToken,user);
 
             ResponseDto responseDto = new ResponseDto();
@@ -76,9 +78,19 @@ public class AuthServiceImpl implements AuthService {
         return new ResponseEntity<>("Authentication Failed",HttpStatus.UNAUTHORIZED);
     }
 
+    private void revokeAllValidTokens(Integer id) {
+        List<Token> validTokens = tokenRepository.findAllValidTokensByUserId(id);
+        if(validTokens.isEmpty())
+            return;
+
+        validTokens.forEach(
+                token -> token.setRevoked(true)
+        );
+    }
+
     private void saveToken(String accessToken, User user) {
         Token token = new Token();
-        token.setAccessToken(accessToken);
+        token.setToken(accessToken);
         token.setTokenType(TokenType.BEARER);
         token.setRevoked(false);
         token.setUser(user);

@@ -1,10 +1,12 @@
 package com.management.accommodation.config;
 
+import com.management.accommodation.auth.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
+    private final TokenRepository tokenRepository;
 
     @Value("${spring.application.security.jwt.secret-key}")
     private String secretKey;
@@ -77,5 +81,12 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token,Claims::getExpiration);
+    }
+
+
+    public boolean isTokenNotRevoked(String jwt) {
+        return tokenRepository.findByToken(jwt)
+                .map(token -> !token.isRevoked())
+                .orElse(false);
     }
 }
