@@ -11,6 +11,8 @@ import com.management.accommodation.auth.repository.AuthRepository;
 import com.management.accommodation.auth.repository.TokenRepository;
 import com.management.accommodation.auth.service.AuthService;
 import com.management.accommodation.config.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +47,12 @@ public class AuthServiceImpl implements AuthService {
         authRepository.save(user);
 
         final String accessToken = jwtService.generateAccessToken(user);
+        final String refreshToken = jwtService.generateRefreshToken(user);
         saveToken(accessToken,user);
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setAccessToken(accessToken);
+        responseDto.setRefreshToken(refreshToken);
 
         return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
     }
@@ -66,16 +70,46 @@ public class AuthServiceImpl implements AuthService {
 
             User user = optionalUser.get();
             final String accessToken = jwtService.generateAccessToken(user);
+            final String refreshToken = jwtService.generateRefreshToken(user);
             revokeAllValidTokens(user.getId());
             saveToken(accessToken,user);
 
             ResponseDto responseDto = new ResponseDto();
             responseDto.setAccessToken(accessToken);
+            responseDto.setRefreshToken(refreshToken);
 
             return new ResponseEntity<>(responseDto,HttpStatus.OK);
 
         }
         return new ResponseEntity<>("Authentication Failed",HttpStatus.UNAUTHORIZED);
+    }
+
+    @Override
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        final String authHeader = request.getHeader("Authorization");
+        if(authHeader == null || !authHeader.startsWith("Bearer "))
+            return new ResponseEntity<>("Invalid Header",HttpStatus.BAD_REQUEST);
+
+        final String jwt = authHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(jwt);
+        if(userEmail != null){
+            Optional<User> optionalUser = authRepository.findByEmail(userEmail);
+            if(optionalUser.isPresent()){
+                User user = optionalUser.get();
+                if(jwtService.isTokenValid(jwt,user)){
+                    final String accessToken = jwtService.generateRefreshToken(user);
+                    revokeAllValidTokens(user.getId());
+                    saveToken(accessToken,user);
+
+                    ResponseDto responseDto = new ResponseDto();
+                    responseDto.setAccessToken(accessToken);
+                    responseDto.setRefreshToken(jwt);
+
+                    return new ResponseEntity<>(responseDto,HttpStatus.OK);
+                }
+            }
+        }
+        return new ResponseEntity<>("Invalid Token",HttpStatus.FORBIDDEN);
     }
 
     private void revokeAllValidTokens(Integer id) {

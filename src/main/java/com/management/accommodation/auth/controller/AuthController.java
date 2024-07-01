@@ -3,6 +3,8 @@ package com.management.accommodation.auth.controller;
 import com.management.accommodation.auth.dto.requestDto.AuthDto;
 import com.management.accommodation.auth.dto.requestDto.RegisterDto;
 import com.management.accommodation.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,5 +26,10 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthDto authDto){
         return authService.authenticate(authDto);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response){
+        return authService.refresh(request,response);
     }
 }

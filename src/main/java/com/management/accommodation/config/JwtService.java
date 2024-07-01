@@ -28,6 +28,9 @@ public class JwtService {
     @Value("${spring.application.security.jwt.expiration}")
     private long accessTokenExpiration;
 
+    @Value("${spring.application.security.jwt.refresh-token.expiration}")
+    private long refreshTokenExpiration;
+
     private Key getSignInKey(){
         byte[] keyByte = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyByte);
@@ -50,6 +53,9 @@ public class JwtService {
 
     public String generateAccessToken(UserDetails userDetails){
         return generateAccessToken(new HashMap<>(),userDetails);
+    }
+    public String generateRefreshToken(UserDetails userDetails){
+        return buildToken(new HashMap<>(),userDetails,refreshTokenExpiration);
     }
 
     private Claims extractAllClaims(String token){
