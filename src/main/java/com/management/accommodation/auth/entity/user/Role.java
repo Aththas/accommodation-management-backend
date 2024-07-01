@@ -1,4 +1,4 @@
-package com.management.accommodation.auth.entity;
+package com.management.accommodation.auth.entity.user;
 
 public enum Role {
     ADMIN,

@@ -1,6 +1,6 @@
 package com.management.accommodation.auth.repository;
 
-import com.management.accommodation.auth.entity.User;
+import com.management.accommodation.auth.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

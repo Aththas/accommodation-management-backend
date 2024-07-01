@@ -1,5 +1,6 @@
-package com.management.accommodation.auth.entity;
+package com.management.accommodation.auth.entity.user;
 
+import com.management.accommodation.auth.entity.token.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,9 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "tbl_user")
+    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
