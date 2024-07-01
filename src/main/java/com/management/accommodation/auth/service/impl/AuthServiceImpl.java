@@ -120,6 +120,7 @@ public class AuthServiceImpl implements AuthService {
         validTokens.forEach(
                 token -> token.setRevoked(true)
         );
+        tokenRepository.saveAll(validTokens);
     }
 
     private void saveToken(String accessToken, User user) {
