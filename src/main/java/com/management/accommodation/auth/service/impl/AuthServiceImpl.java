@@ -11,6 +11,7 @@ import com.management.accommodation.auth.repository.AuthRepository;
 import com.management.accommodation.auth.repository.TokenRepository;
 import com.management.accommodation.auth.service.AuthService;
 import com.management.accommodation.config.JwtService;
+import com.management.accommodation.validation.ObjectValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,11 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final ObjectValidator<RegisterDto> registerValidator;
+    private final ObjectValidator<AuthDto> authValidator;
     @Override
     public ResponseEntity<?> register(RegisterDto registerDto) {
+        registerValidator.validate(registerDto);
         Optional<User> optionalUser = authRepository.findByEmail(registerDto.getEmail());
         if(optionalUser.isPresent())
             return new ResponseEntity<>("Email Already Existed", HttpStatus.NOT_ACCEPTABLE);
@@ -59,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> authenticate(AuthDto authDto) {
+        authValidator.validate(authDto);
         Optional<User> optionalUser = authRepository.findByEmail(authDto.getEmail());
         if(optionalUser.isPresent()){
             authenticationManager.authenticate(

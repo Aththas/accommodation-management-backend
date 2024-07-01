@@ -4,6 +4,7 @@ import com.management.accommodation.auth.dto.requestDto.PasswordResetDto;
 import com.management.accommodation.auth.entity.user.User;
 import com.management.accommodation.auth.repository.AuthRepository;
 import com.management.accommodation.auth.service.UserService;
+import com.management.accommodation.validation.ObjectValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +13,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectValidator<PasswordResetDto> passwordResetValidator;
     @Override
     public ResponseEntity<String> passwordReset(PasswordResetDto passwordResetDto) {
+        passwordResetValidator.validate(passwordResetDto);
 
         final String userEmail = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmail();
         User user = authRepository.findByEmail(userEmail).orElseThrow(()->new UsernameNotFoundException("User Not Found"));
