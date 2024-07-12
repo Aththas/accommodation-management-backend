@@ -3,7 +3,9 @@ package com.management.accommodation.service;
 import com.management.accommodation.dto.requestDto.OtpDto;
 import com.management.accommodation.dto.requestDto.StaffDto;
 import com.management.accommodation.dto.requestDto.StudentDto;
+import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
+import com.management.accommodation.dto.responseDto.GetStaffDto;
 import com.management.accommodation.dto.responseDto.GetStudentDto;
 import com.management.accommodation.entity.Student;
 import org.springframework.http.ResponseEntity;
@@ -32,4 +34,8 @@ public interface AccommodationService {
     ResponseEntity<GetStudentDto> getMaleStudentAccommodation(Integer id);
 
     ResponseEntity<GetStudentDto> getFemaleStudentAccommodation(Integer id);
+
+    ResponseEntity<List<GetAllStaffsDto>> getAllStaffAccommodations();
+
+    ResponseEntity<GetStaffDto> getStaffAccommodation(Integer id);
 }

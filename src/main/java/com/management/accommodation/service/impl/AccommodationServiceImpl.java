@@ -3,7 +3,9 @@ package com.management.accommodation.service.impl;
 import com.management.accommodation.dto.requestDto.OtpDto;
 import com.management.accommodation.dto.requestDto.StaffDto;
 import com.management.accommodation.dto.requestDto.StudentDto;
+import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
+import com.management.accommodation.dto.responseDto.GetStaffDto;
 import com.management.accommodation.dto.responseDto.GetStudentDto;
 import com.management.accommodation.emailService.EmailService;
 import com.management.accommodation.entity.Room;
@@ -264,6 +266,20 @@ public class AccommodationServiceImpl implements AccommodationService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Override
+    public ResponseEntity<List<GetAllStaffsDto>> getAllStaffAccommodations() {
+        List<Staff> staffs = staffAccommodationRepository.findAll();
+        return new ResponseEntity<>(staffs.stream().map(accommodationMapper::convertToGetAllStaffsDto).collect(Collectors.toList()), HttpStatus.OK);
+    }
 
+    @Override
+    public ResponseEntity<GetStaffDto> getStaffAccommodation(Integer id) {
+        Optional<Staff> optionalStaff = staffAccommodationRepository.findById(id);
+        if(optionalStaff.isPresent()){
+            Staff staff = optionalStaff.get();
+            return  new ResponseEntity<>(accommodationMapper.convertToGetStaffDto(staff),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }
