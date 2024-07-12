@@ -1,6 +1,5 @@
 package com.management.accommodation.config;
 
-import com.management.accommodation.auth.entity.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +32,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/accommodation/staff/**").permitAll()
                         .requestMatchers("/api/v1/accommodation/admin/getAllStudentAccommodations").hasRole(ADMIN.name())
                         .requestMatchers("/api/v1/accommodation/admin/getStudentAccommodation").hasRole(ADMIN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getAllStaffAccommodations").hasRole(ADMIN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getStaffAccommodation").hasRole(ADMIN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/staff-update-status").hasRole(ADMIN.name())
                         .requestMatchers("/api/v1/accommodation/admin/getAllMaleStudentAccommodations").hasRole(BOY_WARDEN.name())
                         .requestMatchers("/api/v1/accommodation/admin/getMaleStudentAccommodation").hasRole(BOY_WARDEN.name())
                         .requestMatchers("/api/v1/accommodation/admin/getAllFemaleStudentAccommodations").hasRole(GIRL_WARDEN.name())

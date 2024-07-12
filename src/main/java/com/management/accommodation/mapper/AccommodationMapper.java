@@ -1,7 +1,10 @@
 package com.management.accommodation.mapper;
 
+import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
+import com.management.accommodation.dto.responseDto.GetStaffDto;
 import com.management.accommodation.dto.responseDto.GetStudentDto;
+import com.management.accommodation.entity.Staff;
 import com.management.accommodation.entity.Student;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +39,37 @@ public class AccommodationMapper {
         getStudentDto.setPaymentSlip(student.getPaymentSlip());
         getStudentDto.setNoOfDays(student.getNoOfDays());
         getStudentDto.setRoomNo(student.getRoomNo());
-
         return getStudentDto;
+    }
+
+    public GetAllStaffsDto convertToGetAllStaffsDto(Staff staff) {
+        GetAllStaffsDto getAllStaffsDto = new GetAllStaffsDto();
+        getAllStaffsDto.setStaffId(staff.getStaffId());
+        getAllStaffsDto.setName(staff.getName());
+        getAllStaffsDto.setEmail(staff.getEmail());
+        getAllStaffsDto.setRoomNo(staff.getRoomNo());
+        getAllStaffsDto.setStartDate(staff.getStartDate());
+        getAllStaffsDto.setEndDate(staff.getEndDate());
+        getAllStaffsDto.setStatus(staff.getStatus());
+        return getAllStaffsDto;
+    }
+
+    public GetStaffDto convertToGetStaffDto(Staff staff)
+    {
+        GetStaffDto getStaffDto = new GetStaffDto();
+        getStaffDto.setName(staff.getName());
+        getStaffDto.setGender(staff.getGender());
+        getStaffDto.setStaffId(staff.getStaffId());
+        getStaffDto.setEmail(staff.getEmail());
+        getStaffDto.setContactNo(staff.getContactNo());
+        getStaffDto.setStaffType(staff.getStaffType());
+        getStaffDto.setPost(staff.getPost());
+        getStaffDto.setPaymentSlip(staff.getPaymentSlip());
+        getStaffDto.setStartDate(staff.getStartDate());
+        getStaffDto.setEndDate(staff.getEndDate());
+        getStaffDto.setNoOfDays(staff.getNoOfDays());
+        getStaffDto.setRoomNo(staff.getRoomNo());
+        getStaffDto.setStatus(staff.getStatus());
+        return getStaffDto;
     }
 }

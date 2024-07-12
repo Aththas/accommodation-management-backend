@@ -3,7 +3,10 @@ package com.management.accommodation.controller;
 import com.management.accommodation.dto.requestDto.OtpDto;
 import com.management.accommodation.dto.requestDto.StaffDto;
 import com.management.accommodation.dto.requestDto.StudentDto;
+import com.management.accommodation.dto.requestDto.UpdateStaffStatusDto;
+import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
+import com.management.accommodation.dto.responseDto.GetStaffDto;
 import com.management.accommodation.dto.responseDto.GetStudentDto;
 import com.management.accommodation.entity.Student;
 import com.management.accommodation.service.AccommodationService;
@@ -70,6 +73,21 @@ public class AccommodationController {
     @GetMapping("/admin/getFemaleStudentAccommodation")//female only
     public ResponseEntity<GetStudentDto> getFemaleStudentAccommodation(@RequestParam Integer id){
         return accommodationService.getFemaleStudentAccommodation(id);
+    }
+
+    @GetMapping("/admin/getAllStaffAccommodations")//admin only
+    public ResponseEntity<List<GetAllStaffsDto>> getAllStaffAccommodations(){
+        return accommodationService.getAllStaffAccommodations();
+    }
+
+    @GetMapping("/admin/getStaffAccommodation")//admin only
+    public ResponseEntity<GetStaffDto> getStaffAccommodation(@RequestParam Integer id){
+        return accommodationService.getStaffAccommodation(id);
+    }
+
+    @PutMapping("/admin/staff-update-status")//admin only
+    public ResponseEntity<String> updateStaffAccommodation(@RequestParam Integer id, @RequestBody UpdateStaffStatusDto updateStaffStatusDto){
+        return accommodationService.updateStaffAccommodation(id,updateStaffStatusDto);
     }
 
 }

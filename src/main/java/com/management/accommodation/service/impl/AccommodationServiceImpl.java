@@ -3,7 +3,10 @@ package com.management.accommodation.service.impl;
 import com.management.accommodation.dto.requestDto.OtpDto;
 import com.management.accommodation.dto.requestDto.StaffDto;
 import com.management.accommodation.dto.requestDto.StudentDto;
+import com.management.accommodation.dto.requestDto.UpdateStaffStatusDto;
+import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
+import com.management.accommodation.dto.responseDto.GetStaffDto;
 import com.management.accommodation.dto.responseDto.GetStudentDto;
 import com.management.accommodation.emailService.EmailService;
 import com.management.accommodation.entity.Room;
@@ -105,6 +108,14 @@ public class AccommodationServiceImpl implements AccommodationService {
             Student student = studentStorage.retrieveAccommodationDetails(otpDto.getEmail());
             if (student != null) {
                 studentAccommodationRepository.save(student);
+                String roomNo = student.getRoomNo();
+                Optional<Room> optionalRoom = roomRepository.findByRoom(roomNo);
+                if(optionalRoom.isPresent()){
+                    Room room = optionalRoom.get();
+                    room.setFilledSpace(room.getFilledSpace() + 1);
+                    room.setAvailableSpace(room.getAvailableSpace() - 1);
+                    roomRepository.save(room);
+                }
                 emailService.sendEmail(
                         otpDto.getEmail(),
                         "Regarding Student Accommodation",
@@ -179,6 +190,14 @@ public class AccommodationServiceImpl implements AccommodationService {
             Staff staff = staffStorage.retrieveAccommodationDetails(otpDto.getEmail());
             if (staff != null) {
                 staffAccommodationRepository.save(staff);
+                String roomNo = staff.getRoomNo();
+                Optional<Room> optionalRoom = roomRepository.findByRoom(roomNo);
+                if(optionalRoom.isPresent()){
+                    Room room = optionalRoom.get();
+                    room.setFilledSpace(room.getFilledSpace() + 1);
+                    room.setAvailableSpace(room.getAvailableSpace() - 1);
+                    roomRepository.save(room);
+                }
                 emailService.sendEmail(
                         otpDto.getEmail(),
                         "Regarding Student Accommodation",
@@ -264,6 +283,60 @@ public class AccommodationServiceImpl implements AccommodationService {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Override
+    public ResponseEntity<List<GetAllStaffsDto>> getAllStaffAccommodations() {
+        List<Staff> staffs = staffAccommodationRepository.findAll();
+        return new ResponseEntity<>(staffs.stream().map(accommodationMapper::convertToGetAllStaffsDto).collect(Collectors.toList()), HttpStatus.OK);
+    }
 
+    @Override
+    public ResponseEntity<GetStaffDto> getStaffAccommodation(Integer id) {
+        Optional<Staff> optionalStaff = staffAccommodationRepository.findById(id);
+        if(optionalStaff.isPresent()){
+            Staff staff = optionalStaff.get();
+            return  new ResponseEntity<>(accommodationMapper.convertToGetStaffDto(staff),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    public ResponseEntity<String> updateStaffAccommodation(Integer id, UpdateStaffStatusDto updateStaffStatusDto) {
+        Optional<Staff> optionalStaff = staffAccommodationRepository.findById(id);
+        if(optionalStaff.isPresent() && optionalStaff.get().getStatus().equals("pending")){
+            Staff staff = optionalStaff.get();
+            staff.setStatus(updateStaffStatusDto.getStatus());
+            staffAccommodationRepository.save(staff);
+
+            if(updateStaffStatusDto.getStatus().equals("rejected")){
+                String roomNo = staff.getRoomNo();
+                Optional<Room> optionalRoom = roomRepository.findByRoom(roomNo);
+                if(optionalRoom.isPresent()){
+                    Room room = optionalRoom.get();
+                    room.setFilledSpace(room.getFilledSpace() - 1);
+                    room.setAvailableSpace(room.getAvailableSpace() + 1);
+                    roomRepository.save(room);
+
+                    emailService.sendEmail(
+                            staff.getEmail(),
+                            "Regarding Student Accommodation",
+                            "Your Accommodation has been Rejected." +
+                                    " Contact Admin for more details and your accommodation fee will be refund soon");
+                }
+                else{
+                    return new ResponseEntity<>("Invalid Room No",HttpStatus.NOT_FOUND);
+                }
+            }
+            else if(updateStaffStatusDto.getStatus().equals("accepted")){
+                emailService.sendEmail(
+                        staff.getEmail(),
+                        "Regarding Student Accommodation",
+                        "Your Accommodation has been accepted. Your Room No: "+ staff.getRoomNo() +
+                                " Your accommodation will be from "+ staff.getStartDate() +" to "+ staff.getEndDate() +
+                                " Show this email to the receptionist to get your room keys.");
+            }
+            return new ResponseEntity<>("Status Updated Successfully",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Status Updated Failed",HttpStatus.NOT_FOUND);
+    }
 
 }
