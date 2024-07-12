@@ -1,4 +1,4 @@
-package com.management.accommodation.emailVerification;
+package com.management.accommodation.otpService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,14 +14,10 @@ public class OtpStorage {
     private final ConcurrentHashMap<String, Student> studentStorage = new ConcurrentHashMap<>();
 
     public void storeOtp(String email, String otp) {
-        log.error(otp);
-        log.error(email);
         otpStorage.put(email, otp);
     }
 
     public String retrieveOtp(String email) {
-        log.error(email);
-        log.error(otpStorage.get(email));
         return otpStorage.get(email);
     }
 

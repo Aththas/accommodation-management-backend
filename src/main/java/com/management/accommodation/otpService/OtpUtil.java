@@ -1,4 +1,4 @@
-package com.management.accommodation.emailVerification;
+package com.management.accommodation.otpService;
 
 import org.springframework.stereotype.Component;
 

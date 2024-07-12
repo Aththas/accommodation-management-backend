@@ -2,10 +2,12 @@ package com.management.accommodation.service.impl;
 
 import com.management.accommodation.dto.requestDto.OtpDto;
 import com.management.accommodation.dto.requestDto.StudentDto;
-import com.management.accommodation.emailVerification.EmailService;
-import com.management.accommodation.emailVerification.OtpStorage;
-import com.management.accommodation.emailVerification.OtpUtil;
+import com.management.accommodation.emailService.EmailService;
+import com.management.accommodation.entity.Room;
+import com.management.accommodation.otpService.OtpStorage;
+import com.management.accommodation.otpService.OtpUtil;
 import com.management.accommodation.entity.Student;
+import com.management.accommodation.repository.RoomRepository;
 import com.management.accommodation.repository.StudentRepository;
 import com.management.accommodation.service.StudentService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +34,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final OtpStorage otpStorage;
     private final EmailService emailService;
-    //private final OtpUtil otpUtil;
+    private final RoomRepository roomRepository;
     @Override
     public ResponseEntity<String> accommodation(StudentDto studentDto) throws IOException {
         Student student = new Student();
@@ -43,32 +48,65 @@ public class StudentServiceImpl implements StudentService {
 
         MultipartFile file = studentDto.getPaymentSlip();
         String paymentSlip = saveFile(file);
-
         student.setPaymentSlip(paymentSlip);
+
+        student.setStartDate(studentDto.getStartDate());
+        student.setNoOfDays(studentDto.getNoOfDays());
+        student.setStatus(studentDto.getStatus());
+        student.setGender(studentDto.getGender());
+
+        // Calculate end date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(studentDto.getStartDate());
+        calendar.add(Calendar.DAY_OF_MONTH, studentDto.getNoOfDays());
+        Date endDate = calendar.getTime();
+        student.setEndDate(endDate);
+
+        Optional<Room> optionalRoom = roomRepository.findByRoom(studentDto.getRoomNo());
+        if(optionalRoom.isEmpty()){
+            return new ResponseEntity<>("Invalid Room No",HttpStatus.BAD_REQUEST);
+        }
+
+        Room room = optionalRoom.get();
+        if(room.getAvailableSpace() == 0){
+            return new ResponseEntity<>("Room is already Filled",HttpStatus.BAD_REQUEST);
+        }
+
+        if(studentDto.getGender().equals("male") && !room.getBuilding().equals("B8")){
+            return new ResponseEntity<>("Please select male student room",HttpStatus.BAD_REQUEST);
+        }
+        if(studentDto.getGender().equals("female") && !room.getBuilding().equals("B9")){
+            return new ResponseEntity<>("Please select female student room",HttpStatus.BAD_REQUEST);
+        }
 
         // Generate and send OTP
         String otp = OtpUtil.generateOtp();
         otpStorage.storeOtp(studentDto.getEmail(), otp);
         otpStorage.storeStudentDetails(studentDto.getEmail(), student);
-        emailService.sendOtpEmail(studentDto.getEmail(), "Your OTP Code", "Your OTP code is: " + otp);
+        emailService.sendEmail(studentDto.getEmail(), "Your OTP Code", "Your OTP code is: " + otp);
         return new ResponseEntity<>("OTP sent to email " + studentDto.getEmail(), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<String> verifyOtp(OtpDto otpDto) {
         String storedOtp = otpStorage.retrieveOtp(otpDto.getEmail());
-        log.error(storedOtp);
+
         if (storedOtp != null && storedOtp.equals(otpDto.getOtp())) {
             Student student = otpStorage.retrieveStudentDetails(otpDto.getEmail());
             if (student != null) {
-                // Save student details to the database
+
                 studentRepository.save(student);
+                emailService.sendEmail(
+                        otpDto.getEmail(),
+                        "Regarding Student Accommodation",
+                        "Your Accommodation has been sent for the admin review. Please wait for the approval." +
+                                " You will Receive a confirmation mail with in 24 hours");
                 otpStorage.removeOtp(otpDto.getEmail());
                 otpStorage.removeStudentDetails(otpDto.getEmail());
 
-                return new ResponseEntity<>("OTP verified successfully. Student details saved.", HttpStatus.OK);
+                return new ResponseEntity<>("OTP verified successfully. More details will be sent to " + otpDto.getEmail(), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("No student details found.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("No student accommodation details found.", HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>("Invalid OTP.", HttpStatus.BAD_GATEWAY);
