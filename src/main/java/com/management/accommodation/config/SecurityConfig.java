@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import static com.management.accommodation.auth.entity.user.Role.ADMIN;
+import static com.management.accommodation.auth.entity.user.Role.*;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +29,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/accommodation/**").permitAll()
+                        .requestMatchers("/api/v1/accommodation/student/**").permitAll()
+                        .requestMatchers("/api/v1/accommodation/staff/**").permitAll()
+                        .requestMatchers("/api/v1/accommodation/admin/getAllStudentAccommodations").hasRole(ADMIN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getStudentAccommodation").hasRole(ADMIN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getAllMaleStudentAccommodations").hasRole(BOY_WARDEN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getMaleStudentAccommodation").hasRole(BOY_WARDEN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getAllFemaleStudentAccommodations").hasRole(GIRL_WARDEN.name())
+                        .requestMatchers("/api/v1/accommodation/admin/getFemaleStudentAccommodation").hasRole(GIRL_WARDEN.name())
                         .requestMatchers("/api/v1/demo").hasRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
