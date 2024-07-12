@@ -3,9 +3,12 @@ package com.management.accommodation.service.impl;
 import com.management.accommodation.dto.requestDto.OtpDto;
 import com.management.accommodation.dto.requestDto.StaffDto;
 import com.management.accommodation.dto.requestDto.StudentDto;
+import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
+import com.management.accommodation.dto.responseDto.GetStudentDto;
 import com.management.accommodation.emailService.EmailService;
 import com.management.accommodation.entity.Room;
 import com.management.accommodation.entity.Staff;
+import com.management.accommodation.mapper.AccommodationMapper;
 import com.management.accommodation.otpService.OtpStorage;
 import com.management.accommodation.otpService.OtpUtil;
 import com.management.accommodation.entity.Student;
@@ -26,7 +29,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +43,7 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final OtpStorage<Staff> staffStorage;
     private final EmailService emailService;
     private final RoomRepository roomRepository;
+    private final AccommodationMapper accommodationMapper;
 
     @Override
     public ResponseEntity<String> studentAccommodation(StudentDto studentDto) throws IOException {
@@ -204,4 +210,60 @@ public class AccommodationServiceImpl implements AccommodationService {
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         return Paths.get(baseDir, folderPath, file.getOriginalFilename()).toString();
     }
+
+    @Override
+    public ResponseEntity<List<GetAllStudentsDto>> getAllMaleStudentAccommodations() {
+        return getStudentsByGender("male");
+    }
+
+    @Override
+    public ResponseEntity<List<GetAllStudentsDto>> getAllFemaleStudentAccommodations() {
+        return getStudentsByGender("female");
+    }
+
+    private ResponseEntity<List<GetAllStudentsDto>> getStudentsByGender(String gender){
+        List<Student> students = studentAccommodationRepository.findAllByGender(gender);
+        return new ResponseEntity<>(students.stream().map(accommodationMapper::convertToDto).collect(Collectors.toList()),HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<GetAllStudentsDto>> getAllStudentAccommodations() {
+        List<Student> students = studentAccommodationRepository.findAll();
+        return new ResponseEntity<>(students.stream().map(accommodationMapper::convertToDto).collect(Collectors.toList()),HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<GetStudentDto> getStudentAccommodation(Integer id) {
+        Optional<Student> optionalStudent = studentAccommodationRepository.findById(id);
+        if(optionalStudent.isPresent()){
+            Student student = optionalStudent.get();
+            return  new ResponseEntity<>(accommodationMapper.convertToGetStudentDto(student),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    public ResponseEntity<GetStudentDto> getMaleStudentAccommodation(Integer id) {
+        return getStudentByGender("male",id);
+    }
+
+    @Override
+    public ResponseEntity<GetStudentDto> getFemaleStudentAccommodation(Integer id) {
+        return getStudentByGender("female",id);
+    }
+
+    private ResponseEntity<GetStudentDto> getStudentByGender(String gender,Integer id){
+        Optional<Student> optionalStudent = studentAccommodationRepository.findById(id);
+        if(optionalStudent.isPresent()){
+            Student student = optionalStudent.get();
+            if(student.getGender().equals(gender)){
+                return  new ResponseEntity<>(accommodationMapper.convertToGetStudentDto(student),HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+
 }
