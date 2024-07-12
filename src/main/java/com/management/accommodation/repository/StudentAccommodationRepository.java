@@ -2,6 +2,8 @@ package com.management.accommodation.repository;
 
 import com.management.accommodation.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface StudentRepository extends JpaRepository<Student,Integer> {
+@Repository
+public interface StudentAccommodationRepository extends JpaRepository<Student,Integer> {
 }

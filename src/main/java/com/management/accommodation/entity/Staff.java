@@ -15,17 +15,17 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Student {
+public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String studentId;
+    private String staffId;
     private String name;
+    private String post;
+    private String contactNo;
     private String email;
-    private Integer contactNo;
-    private String faculty;
     private String roomNo;
-    private String studentType;
+    private String staffType;
     private String paymentSlip;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -37,4 +37,5 @@ public class Student {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
+
 }

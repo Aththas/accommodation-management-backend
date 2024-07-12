@@ -2,16 +2,13 @@ package com.management.accommodation.otpService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.management.accommodation.entity.Student;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
-public class OtpStorage {
+public class OtpStorage<T> {
 
     private final ConcurrentHashMap<String, String> otpStorage = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Student> studentStorage = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, T> accommodationStorage = new ConcurrentHashMap<>();
 
     public void storeOtp(String email, String otp) {
         otpStorage.put(email, otp);
@@ -25,16 +22,16 @@ public class OtpStorage {
         otpStorage.remove(email);
     }
 
-    public void storeStudentDetails(String email, Student student) {
-        studentStorage.put(email, student);
+    public void storeAccommodationDetails(String email, T object) {
+        accommodationStorage.put(email, object);
     }
 
-    public Student retrieveStudentDetails(String email) {
-        return studentStorage.get(email);
+    public T retrieveAccommodationDetails(String email) {
+        return accommodationStorage.get(email);
     }
 
-    public void removeStudentDetails(String email) {
-        studentStorage.remove(email);
+    public void removeAccommodationDetails(String email) {
+        accommodationStorage.remove(email);
     }
 }
 
