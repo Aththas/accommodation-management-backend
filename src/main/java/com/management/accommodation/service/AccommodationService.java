@@ -1,9 +1,6 @@
 package com.management.accommodation.service;
 
-import com.management.accommodation.dto.requestDto.OtpDto;
-import com.management.accommodation.dto.requestDto.StaffDto;
-import com.management.accommodation.dto.requestDto.StudentDto;
-import com.management.accommodation.dto.requestDto.UpdateStaffStatusDto;
+import com.management.accommodation.dto.requestDto.*;
 import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
 import com.management.accommodation.dto.responseDto.GetStaffDto;
@@ -41,4 +38,8 @@ public interface AccommodationService {
     ResponseEntity<GetStaffDto> getStaffAccommodation(Integer id);
 
     ResponseEntity<String> updateStaffAccommodation(Integer id, UpdateStaffStatusDto updateStaffStatusDto);
+
+    ResponseEntity<String> updateMaleStudentAccommodation(Integer id, UpdateStudentStatusDto updateStudentStatusDto);
+
+    ResponseEntity<String> updateFemaleStudentAccommodation(Integer id, UpdateStudentStatusDto updateStudentStatusDto);
 }

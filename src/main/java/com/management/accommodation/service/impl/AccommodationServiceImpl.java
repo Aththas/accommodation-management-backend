@@ -1,9 +1,6 @@
 package com.management.accommodation.service.impl;
 
-import com.management.accommodation.dto.requestDto.OtpDto;
-import com.management.accommodation.dto.requestDto.StaffDto;
-import com.management.accommodation.dto.requestDto.StudentDto;
-import com.management.accommodation.dto.requestDto.UpdateStaffStatusDto;
+import com.management.accommodation.dto.requestDto.*;
 import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
 import com.management.accommodation.dto.responseDto.GetStaffDto;
@@ -318,7 +315,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
                     emailService.sendEmail(
                             staff.getEmail(),
-                            "Regarding Student Accommodation",
+                            "Regarding Staff Accommodation",
                             "Your Accommodation has been Rejected." +
                                     " Contact Admin for more details and your accommodation fee will be refund soon");
                 }
@@ -329,7 +326,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             else if(updateStaffStatusDto.getStatus().equals("accepted")){
                 emailService.sendEmail(
                         staff.getEmail(),
-                        "Regarding Student Accommodation",
+                        "Regarding Staff Accommodation",
                         "Your Accommodation has been accepted. Your Room No: "+ staff.getRoomNo() +
                                 " Your accommodation will be from "+ staff.getStartDate() +" to "+ staff.getEndDate() +
                                 " Show this email to the receptionist to get your room keys.");
@@ -338,5 +335,55 @@ public class AccommodationServiceImpl implements AccommodationService {
         }
         return new ResponseEntity<>("Status Updated Failed",HttpStatus.NOT_FOUND);
     }
+
+    @Override
+    public ResponseEntity<String> updateMaleStudentAccommodation(Integer id, UpdateStudentStatusDto updateStudentStatusDto) {
+        return updateStudentAccommodation(id, updateStudentStatusDto, "male");
+    }
+
+    @Override
+    public ResponseEntity<String> updateFemaleStudentAccommodation(Integer id, UpdateStudentStatusDto updateStudentStatusDto) {
+        return updateStudentAccommodation(id, updateStudentStatusDto, "female");
+    }
+
+    private ResponseEntity<String> updateStudentAccommodation(Integer id, UpdateStudentStatusDto updateStudentStatusDto, String gender) {
+        Optional<Student> optionalStudent = studentAccommodationRepository.findById(id);
+        if(optionalStudent.isPresent() && optionalStudent.get().getStatus().equals("pending") && optionalStudent.get().getGender().equals(gender)){
+            Student student = optionalStudent.get();
+            student.setStatus(updateStudentStatusDto.getStatus());
+            studentAccommodationRepository.save(student);
+
+            if(updateStudentStatusDto.getStatus().equals("rejected")){
+                String roomNo = student.getRoomNo();
+                Optional<Room> optionalRoom = roomRepository.findByRoom(roomNo);
+                if(optionalRoom.isPresent()){
+                    Room room = new Room();
+                    room.setFilledSpace(room.getFilledSpace() - 1);
+                    room.setAvailableSpace(room.getAvailableSpace() + 1);
+                    roomRepository.save(room);
+
+                    emailService.sendEmail(
+                            student.getEmail(),
+                            "Regarding Student Accommodation",
+                            "Your Accommodation has been Rejected." +
+                                    " Contact Admin for more details and your accommodation fee will be refund soon");
+                }
+                else{
+                    return new ResponseEntity<>("Invalid Room No",HttpStatus.NOT_FOUND);
+                }
+            }
+            else if(updateStudentStatusDto.getStatus().equals("accepted")){
+                emailService.sendEmail(
+                        student.getEmail(),
+                        "Regarding Student Accommodation",
+                        "Your Accommodation has been accepted. Your Room No: "+ student.getRoomNo() +
+                                " Your accommodation will be from "+ student.getStartDate() +" to "+ student.getEndDate() +
+                                " Show this email to the receptionist to get your room keys.");
+            }
+            return new ResponseEntity<>("Status Updated Successfully",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Status Updated Failed",HttpStatus.NOT_FOUND);
+    }
+
 
 }

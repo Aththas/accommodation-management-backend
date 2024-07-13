@@ -1,9 +1,6 @@
 package com.management.accommodation.controller;
 
-import com.management.accommodation.dto.requestDto.OtpDto;
-import com.management.accommodation.dto.requestDto.StaffDto;
-import com.management.accommodation.dto.requestDto.StudentDto;
-import com.management.accommodation.dto.requestDto.UpdateStaffStatusDto;
+import com.management.accommodation.dto.requestDto.*;
 import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
 import com.management.accommodation.dto.responseDto.GetStaffDto;
@@ -88,6 +85,16 @@ public class AccommodationController {
     @PutMapping("/admin/staff-update-status")//admin only
     public ResponseEntity<String> updateStaffAccommodation(@RequestParam Integer id, @RequestBody UpdateStaffStatusDto updateStaffStatusDto){
         return accommodationService.updateStaffAccommodation(id,updateStaffStatusDto);
+    }
+
+    @PutMapping("/admin/male-student-update-status")//admin only
+    public ResponseEntity<String> updateMaleStudentAccommodation(@RequestParam Integer id, @RequestBody UpdateStudentStatusDto updateStudentStatusDto){
+        return accommodationService.updateMaleStudentAccommodation(id,updateStudentStatusDto);
+    }
+
+    @PutMapping("/admin/female-student-update-status")//admin only
+    public ResponseEntity<String> updateFemaleStudentAccommodation(@RequestParam Integer id, @RequestBody UpdateStudentStatusDto updateStudentStatusDto){
+        return accommodationService.updateFemaleStudentAccommodation(id,updateStudentStatusDto);
     }
 
 }
