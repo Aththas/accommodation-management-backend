@@ -2,14 +2,19 @@ package com.management.accommodation.service.impl;
 
 import com.management.accommodation.dto.requestDto.RoomDto;
 import com.management.accommodation.entity.Room;
+import com.management.accommodation.entity.Staff;
+import com.management.accommodation.entity.Student;
 import com.management.accommodation.mapper.RoomMapper;
 import com.management.accommodation.repository.RoomRepository;
+import com.management.accommodation.repository.StaffAccommodationRepository;
+import com.management.accommodation.repository.StudentAccommodationRepository;
 import com.management.accommodation.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +24,8 @@ import java.util.stream.Collectors;
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
+    private final StaffAccommodationRepository staffAccommodationRepository;
+    private final StudentAccommodationRepository studentAccommodationRepository;
     @Override
     public ResponseEntity<String> addRoom(RoomDto roomDto) {
         Optional<Room> optionalRoom = roomRepository.findByRoom(roomDto.getRoom());
@@ -60,5 +67,57 @@ public class RoomServiceImpl implements RoomService {
         List<Room> rooms = roomRepository.findAllByOrderByIdAsc();
         return new ResponseEntity<>(rooms.stream().map(roomMapper::convertToDto).collect(Collectors.toList()) ,HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<String> revokeStaffRoomSpace(Integer id) {
+        Optional<Staff> optionalStaff = staffAccommodationRepository.findById(id);
+        if(optionalStaff.isPresent() && optionalStaff.get().getStatus().equals("accepted")){
+            Staff staff = optionalStaff.get();
+            if(staff.getEndDate().before(new Date())){
+                Optional<Room> optionalRoom = roomRepository.findByRoom(staff.getRoomNo());
+                if(optionalRoom.isPresent()){
+                    Room room = optionalRoom.get();
+                    room.setFilledSpace(room.getFilledSpace() - 1);
+                    room.setAvailableSpace(room.getAvailableSpace() + 1);
+                    roomRepository.save(room);
+                    return new ResponseEntity<>("Room Space Updated",HttpStatus.OK);
+                }
+                return new ResponseEntity<>("Invalid Room Request",HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>("Accommodation Not Yet Expired",HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>("Invalid Staff Accommodation",HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public ResponseEntity<String> revokeMaleStudentRoomSpace(Integer id) {
+        return revokeStudentRoomSpace(id,"male");
+    }
+
+    @Override
+    public ResponseEntity<String> revokeFemaleStudentRoomSpace(Integer id) {
+        return revokeStudentRoomSpace(id,"female");
+    }
+
+    public ResponseEntity<String> revokeStudentRoomSpace(Integer id, String gender){
+        Optional<Student> optionalStudent = studentAccommodationRepository.findById(id);
+        if(optionalStudent.isPresent() && optionalStudent.get().getStatus().equals("accepted") && optionalStudent.get().getGender().equals(gender)){
+            Student student = optionalStudent.get();
+            if(student.getEndDate().before(new Date())){
+                Optional<Room> optionalRoom = roomRepository.findByRoom(student.getRoomNo());
+                if(optionalRoom.isPresent()){
+                    Room room = optionalRoom.get();
+                    room.setFilledSpace(room.getFilledSpace() - 1);
+                    room.setAvailableSpace(room.getAvailableSpace() + 1);
+                    roomRepository.save(room);
+                    return new ResponseEntity<>("Room Space Updated",HttpStatus.OK);
+                }
+                return new ResponseEntity<>("Invalid Room Request",HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>("Accommodation Not Yet Expired",HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>("Invalid Student Accommodation",HttpStatus.NOT_FOUND);
+    }
+
 
 }

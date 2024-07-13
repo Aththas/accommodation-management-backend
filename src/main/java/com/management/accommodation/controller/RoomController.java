@@ -33,4 +33,18 @@ public class RoomController {
         return roomService.viewRoom();
     }
 
+    @PutMapping("/revoke-staff-room-space")//admin only
+    public ResponseEntity<String> revokeStaffRoomSpace(@RequestParam Integer id){
+        return roomService.revokeStaffRoomSpace(id);
+    }
+
+    @PutMapping("/revoke-male-student-room-space")//Male Warden only
+    public ResponseEntity<String> revokeMaleStudentRoomSpace(@RequestParam Integer id){
+        return roomService.revokeMaleStudentRoomSpace(id);
+    }
+
+    @PutMapping("/revoke-female-student-room-space")//Male Warden only
+    public ResponseEntity<String> revokeFemaleStudentRoomSpace(@RequestParam Integer id){
+        return roomService.revokeFemaleStudentRoomSpace(id);
+    }
 }
