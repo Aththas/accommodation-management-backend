@@ -5,7 +5,6 @@ import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
 import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
 import com.management.accommodation.dto.responseDto.GetStaffDto;
 import com.management.accommodation.dto.responseDto.GetStudentDto;
-import com.management.accommodation.entity.Student;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;

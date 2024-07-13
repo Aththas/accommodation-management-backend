@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface StudentAccommodationRepository extends JpaRepository<Student,Integer> {
-    List<Student> findAllByGender(String gender);
+    List<Student> findAllByGenderOrderByIdAsc(String gender);
+    List<Student> findAllByOrderByIdAsc();
 }

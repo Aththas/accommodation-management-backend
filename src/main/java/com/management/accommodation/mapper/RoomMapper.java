@@ -25,4 +25,5 @@ public class RoomMapper {
         roomDto.setFilledSpace(room.getFilledSpace());
         return roomDto;
     }
+
 }
