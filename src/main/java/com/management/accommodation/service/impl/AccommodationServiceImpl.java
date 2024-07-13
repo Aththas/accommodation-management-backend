@@ -20,15 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,30 +40,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Override
     public ResponseEntity<String> studentAccommodation(StudentDto studentDto) throws IOException {
-        Student student = new Student();
-        student.setStudentId(studentDto.getStudentId());
-        student.setStudentType(studentDto.getStudentType());
-        student.setFaculty(studentDto.getFaculty());
-        student.setName(studentDto.getName());
-        student.setEmail(studentDto.getEmail());
-        student.setContactNo(studentDto.getContactNo());
-        student.setRoomNo(studentDto.getRoomNo());
-
-        MultipartFile file = studentDto.getPaymentSlip();
-        String paymentSlip = saveFile(file);
-        student.setPaymentSlip(paymentSlip);
-
-        student.setStartDate(studentDto.getStartDate());
-        student.setNoOfDays(studentDto.getNoOfDays());
-        student.setStatus(studentDto.getStatus());
-        student.setGender(studentDto.getGender());
-
-        // Calculate end date
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(studentDto.getStartDate());
-        calendar.add(Calendar.DAY_OF_MONTH, studentDto.getNoOfDays());
-        Date endDate = calendar.getTime();
-        student.setEndDate(endDate);
+        Student student =  accommodationMapper.studentAccommodationMapper(studentDto);
 
         Optional<Room> optionalRoom = roomRepository.findByRoom(studentDto.getRoomNo());
         if(optionalRoom.isEmpty()){
@@ -105,14 +75,14 @@ public class AccommodationServiceImpl implements AccommodationService {
             Student student = studentStorage.retrieveAccommodationDetails(otpDto.getEmail());
             if (student != null) {
                 studentAccommodationRepository.save(student);
-                String roomNo = student.getRoomNo();
-                Optional<Room> optionalRoom = roomRepository.findByRoom(roomNo);
+                Optional<Room> optionalRoom = roomRepository.findByRoom(student.getRoomNo());
                 if(optionalRoom.isPresent()){
                     Room room = optionalRoom.get();
                     room.setFilledSpace(room.getFilledSpace() + 1);
                     room.setAvailableSpace(room.getAvailableSpace() - 1);
                     roomRepository.save(room);
                 }
+
                 emailService.sendEmail(
                         otpDto.getEmail(),
                         "Regarding Student Accommodation",
@@ -132,29 +102,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Override
     public ResponseEntity<String> staffAccommodation(StaffDto staffDto) throws IOException {
-        Staff staff = new Staff();
-        staff.setStaffId(staffDto.getStaffId());
-        staff.setName(staffDto.getName());
-        staff.setGender(staffDto.getGender());
-        staff.setEmail(staffDto.getEmail());
-        staff.setStaffType(staffDto.getStaffType());
-        staff.setContactNo(staffDto.getContactNo());
-        staff.setPost(staffDto.getPost());
-        staff.setRoomNo(staffDto.getRoomNo());
-        staff.setStartDate(staffDto.getStartDate());
-        staff.setNoOfDays(staffDto.getNoOfDays());
-        staff.setStatus(staffDto.getStatus());
-
-        MultipartFile file = staffDto.getPaymentSlip();
-        String paymentSlip = saveFile(file);
-        staff.setPaymentSlip(paymentSlip);
-
-        // Calculate end date
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(staffDto.getStartDate());
-        calendar.add(Calendar.DAY_OF_MONTH, staffDto.getNoOfDays());
-        Date endDate = calendar.getTime();
-        staff.setEndDate(endDate);
+        Staff staff = accommodationMapper.staffAccommodationMapper(staffDto);
 
         Optional<Room> optionalRoom = roomRepository.findByRoom(staffDto.getRoomNo());
         if(optionalRoom.isEmpty()){
@@ -169,7 +117,6 @@ public class AccommodationServiceImpl implements AccommodationService {
         if(!room.getBuilding().equals("B17")){
             return new ResponseEntity<>("Please select lecturer room",HttpStatus.BAD_REQUEST);
         }
-
 
         // Generate and send OTP
         String otp = OtpUtil.generateOtp();
@@ -187,17 +134,17 @@ public class AccommodationServiceImpl implements AccommodationService {
             Staff staff = staffStorage.retrieveAccommodationDetails(otpDto.getEmail());
             if (staff != null) {
                 staffAccommodationRepository.save(staff);
-                String roomNo = staff.getRoomNo();
-                Optional<Room> optionalRoom = roomRepository.findByRoom(roomNo);
+                Optional<Room> optionalRoom = roomRepository.findByRoom(staff.getRoomNo());
                 if(optionalRoom.isPresent()){
                     Room room = optionalRoom.get();
                     room.setFilledSpace(room.getFilledSpace() + 1);
                     room.setAvailableSpace(room.getAvailableSpace() - 1);
                     roomRepository.save(room);
                 }
+
                 emailService.sendEmail(
                         otpDto.getEmail(),
-                        "Regarding Student Accommodation",
+                        "Regarding Staff Accommodation",
                         "Your Accommodation has been sent for the admin review. Please wait for the approval." +
                                 " You will Receive a confirmation mail with in 24 hours.");
                 staffStorage.removeOtp(otpDto.getEmail());
@@ -212,21 +159,6 @@ public class AccommodationServiceImpl implements AccommodationService {
         }
     }
 
-    private String saveFile(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            throw new IllegalArgumentException("Cannot save empty file.");
-        }
-        String baseDir = "C:\\Assignments_and_Notes\\9. springboot\\Nuha\\accommodation\\";
-        String folderPath = "src\\main\\java\\com\\management\\accommodation\\paymentSlip\\";
-        Path path = Paths.get(folderPath);
-        if(!Files.exists(path)){
-            Files.createDirectories(path);
-        }
-        Path targetPath = Paths.get(folderPath + file.getOriginalFilename());
-        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        return Paths.get(baseDir, folderPath, file.getOriginalFilename()).toString();
-    }
-
     @Override
     public ResponseEntity<List<GetAllStudentsDto>> getAllMaleStudentAccommodations() {
         return getStudentsByGender("male");
@@ -238,13 +170,13 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     private ResponseEntity<List<GetAllStudentsDto>> getStudentsByGender(String gender){
-        List<Student> students = studentAccommodationRepository.findAllByGender(gender);
+        List<Student> students = studentAccommodationRepository.findAllByGenderOrderByIdAsc(gender);
         return new ResponseEntity<>(students.stream().map(accommodationMapper::convertToDto).collect(Collectors.toList()),HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<List<GetAllStudentsDto>> getAllStudentAccommodations() {
-        List<Student> students = studentAccommodationRepository.findAll();
+        List<Student> students = studentAccommodationRepository.findAllByOrderByIdAsc();
         return new ResponseEntity<>(students.stream().map(accommodationMapper::convertToDto).collect(Collectors.toList()),HttpStatus.OK);
     }
 
@@ -282,7 +214,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Override
     public ResponseEntity<List<GetAllStaffsDto>> getAllStaffAccommodations() {
-        List<Staff> staffs = staffAccommodationRepository.findAll();
+        List<Staff> staffs = staffAccommodationRepository.findAllByOrderByIdAsc();
         return new ResponseEntity<>(staffs.stream().map(accommodationMapper::convertToGetAllStaffsDto).collect(Collectors.toList()), HttpStatus.OK);
     }
 
@@ -384,6 +316,5 @@ public class AccommodationServiceImpl implements AccommodationService {
         }
         return new ResponseEntity<>("Status Updated Failed",HttpStatus.NOT_FOUND);
     }
-
 
 }
