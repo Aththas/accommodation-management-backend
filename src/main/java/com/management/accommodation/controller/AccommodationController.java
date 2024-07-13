@@ -87,12 +87,12 @@ public class AccommodationController {
         return accommodationService.updateStaffAccommodation(id,updateStaffStatusDto);
     }
 
-    @PutMapping("/admin/male-student-update-status")//admin only
+    @PutMapping("/admin/male-student-update-status")//Boy warden only
     public ResponseEntity<String> updateMaleStudentAccommodation(@RequestParam Integer id, @RequestBody UpdateStudentStatusDto updateStudentStatusDto){
         return accommodationService.updateMaleStudentAccommodation(id,updateStudentStatusDto);
     }
 
-    @PutMapping("/admin/female-student-update-status")//admin only
+    @PutMapping("/admin/female-student-update-status")//Girl Warden only
     public ResponseEntity<String> updateFemaleStudentAccommodation(@RequestParam Integer id, @RequestBody UpdateStudentStatusDto updateStudentStatusDto){
         return accommodationService.updateFemaleStudentAccommodation(id,updateStudentStatusDto);
     }
