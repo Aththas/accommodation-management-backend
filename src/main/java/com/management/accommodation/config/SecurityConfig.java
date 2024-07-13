@@ -43,7 +43,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/accommodation/admin/getMaleStudentAccommodation").hasRole(BOY_WARDEN.name())
                         .requestMatchers("/api/v1/accommodation/admin/getAllFemaleStudentAccommodations").hasRole(GIRL_WARDEN.name())
                         .requestMatchers("/api/v1/accommodation/admin/getFemaleStudentAccommodation").hasRole(GIRL_WARDEN.name())
-                        .requestMatchers("/api/v1/demo").hasRole(ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session-> session
