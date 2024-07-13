@@ -28,6 +28,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/user/forgot-password").permitAll()
+                        .requestMatchers("/api/v1/user/verify-otp").permitAll()
+                        .requestMatchers("/api/v1/user/new-password").permitAll()
                         .requestMatchers("/api/v1/accommodation/student/**").permitAll()
                         .requestMatchers("/api/v1/accommodation/staff/**").permitAll()
                         .requestMatchers("/api/v1/accommodation/admin/getAllStudentAccommodations").hasRole(ADMIN.name())
