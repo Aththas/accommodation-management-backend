@@ -13,4 +13,10 @@ public interface RoomService {
     ResponseEntity<String> deleteRoom(Integer id);
 
     ResponseEntity<List<RoomDto>> viewRoom();
+
+    ResponseEntity<String> revokeStaffRoomSpace(Integer id);
+
+    ResponseEntity<String> revokeMaleStudentRoomSpace(Integer id);
+
+    ResponseEntity<String> revokeFemaleStudentRoomSpace(Integer id);
 }
