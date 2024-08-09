@@ -1,4 +1,4 @@
-package com.management.accommodation.emailService;
+package com.management.accommodation.emailservice;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;

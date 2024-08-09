@@ -4,7 +4,7 @@ import com.management.accommodation.auth.dto.requestDto.ForgotPasswordDto;
 import com.management.accommodation.auth.dto.requestDto.NewPasswordDto;
 import com.management.accommodation.auth.dto.requestDto.PasswordResetDto;
 import com.management.accommodation.auth.service.UserService;
-import com.management.accommodation.dto.requestDto.OtpDto;
+import com.management.accommodation.dto.requestdto.OtpDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

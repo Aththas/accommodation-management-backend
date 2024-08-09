@@ -1,22 +1,20 @@
-package com.management.accommodation.dto.requestDto;
+package com.management.accommodation.dto.responsedto;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
 @Data
-public class StaffDto {
-    private String staffId;
+public class GetStaffDto {
+    private String id;
     private String name;
-    private String email;
-    private String contactNo;
     private String post;
+    private String contactNo;
+    private String email;
     private String roomNo;
     private String staffType;
-    private MultipartFile paymentSlip;
+    private String paymentSlip;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
@@ -24,4 +22,7 @@ public class StaffDto {
     private Integer noOfDays;
     private String status;
     private String gender;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endDate;
 }

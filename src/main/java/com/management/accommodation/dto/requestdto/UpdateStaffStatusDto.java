@@ -1,4 +1,4 @@
-package com.management.accommodation.dto.requestDto;
+package com.management.accommodation.dto.requestdto;
 
 import lombok.Data;
 

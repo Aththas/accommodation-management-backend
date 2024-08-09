@@ -1,6 +1,6 @@
 package com.management.accommodation.controller;
 
-import com.management.accommodation.dto.requestDto.RoomDto;
+import com.management.accommodation.dto.requestdto.RoomDto;
 import com.management.accommodation.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

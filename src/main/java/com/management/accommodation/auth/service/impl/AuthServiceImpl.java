@@ -47,7 +47,12 @@ public class AuthServiceImpl implements AuthService {
         user.setLastname(registerDto.getLastname());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRole(Role.BOY_WARDEN);
+        if (registerDto.getRole().equalsIgnoreCase("BOY_WARDEN"))
+            user.setRole(Role.BOY_WARDEN);
+        if (registerDto.getRole().equalsIgnoreCase("GIRL_WARDEN"))
+            user.setRole(Role.GIRL_WARDEN);
+        if (registerDto.getRole().equalsIgnoreCase("ADMIN"))
+            user.setRole(Role.ADMIN);
         authRepository.save(user);
 
         final String accessToken = jwtService.generateAccessToken(user);

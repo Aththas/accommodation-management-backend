@@ -21,4 +21,8 @@ public class RegisterDto {
     @NotEmpty(message = "Empty Password")
     @NotNull(message = "Invalid Password")
     private String password;
+
+    @NotEmpty(message = "Empty Role")
+    @NotNull(message = "Invalid Role")
+    private String role;
 }

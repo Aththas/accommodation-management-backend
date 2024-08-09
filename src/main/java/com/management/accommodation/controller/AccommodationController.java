@@ -1,10 +1,10 @@
 package com.management.accommodation.controller;
 
-import com.management.accommodation.dto.requestDto.*;
-import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
-import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
-import com.management.accommodation.dto.responseDto.GetStaffDto;
-import com.management.accommodation.dto.responseDto.GetStudentDto;
+import com.management.accommodation.dto.requestdto.*;
+import com.management.accommodation.dto.responsedto.GetAllStaffsDto;
+import com.management.accommodation.dto.responsedto.GetAllStudentsDto;
+import com.management.accommodation.dto.responsedto.GetStaffDto;
+import com.management.accommodation.dto.responsedto.GetStudentDto;
 import com.management.accommodation.service.AccommodationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class AccommodationController {
     }
 
     @GetMapping("/admin/getStudentAccommodation")//admin only
-    public ResponseEntity<GetStudentDto> getStudentAccommodation(@RequestParam Integer id){
+    public ResponseEntity<GetStudentDto> getStudentAccommodation(@RequestParam Integer id) {
         return accommodationService.getStudentAccommodation(id);
     }
 

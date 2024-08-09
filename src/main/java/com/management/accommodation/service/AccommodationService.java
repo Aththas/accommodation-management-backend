@@ -1,10 +1,10 @@
 package com.management.accommodation.service;
 
-import com.management.accommodation.dto.requestDto.*;
-import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
-import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
-import com.management.accommodation.dto.responseDto.GetStaffDto;
-import com.management.accommodation.dto.responseDto.GetStudentDto;
+import com.management.accommodation.dto.requestdto.*;
+import com.management.accommodation.dto.responsedto.GetAllStaffsDto;
+import com.management.accommodation.dto.responsedto.GetAllStudentsDto;
+import com.management.accommodation.dto.responsedto.GetStaffDto;
+import com.management.accommodation.dto.responsedto.GetStudentDto;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;

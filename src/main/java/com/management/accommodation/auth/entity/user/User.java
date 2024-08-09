@@ -1,5 +1,6 @@
 package com.management.accommodation.auth.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.management.accommodation.auth.entity.token.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Token> tokens;
 
     @Override

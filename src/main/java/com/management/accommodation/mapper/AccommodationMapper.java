@@ -1,11 +1,11 @@
 package com.management.accommodation.mapper;
 
-import com.management.accommodation.dto.requestDto.StaffDto;
-import com.management.accommodation.dto.requestDto.StudentDto;
-import com.management.accommodation.dto.responseDto.GetAllStaffsDto;
-import com.management.accommodation.dto.responseDto.GetAllStudentsDto;
-import com.management.accommodation.dto.responseDto.GetStaffDto;
-import com.management.accommodation.dto.responseDto.GetStudentDto;
+import com.management.accommodation.dto.requestdto.StaffDto;
+import com.management.accommodation.dto.requestdto.StudentDto;
+import com.management.accommodation.dto.responsedto.GetAllStaffsDto;
+import com.management.accommodation.dto.responsedto.GetAllStudentsDto;
+import com.management.accommodation.dto.responsedto.GetStaffDto;
+import com.management.accommodation.dto.responsedto.GetStudentDto;
 import com.management.accommodation.entity.Staff;
 import com.management.accommodation.entity.Student;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class AccommodationMapper {
 
     public GetAllStudentsDto convertToDto(Student student) {
         GetAllStudentsDto getAllStudentsDto = new GetAllStudentsDto();
-        getAllStudentsDto.setStudentId(student.getStudentId());
+        getAllStudentsDto.setId(student.getId());
         getAllStudentsDto.setName(student.getName());
         getAllStudentsDto.setEmail(student.getEmail());
         getAllStudentsDto.setRoomNo(student.getRoomNo());
@@ -37,7 +37,7 @@ public class AccommodationMapper {
     public GetStudentDto convertToGetStudentDto(Student student)
     {
         GetStudentDto getStudentDto = new GetStudentDto();
-        getStudentDto.setStudentId(student.getStudentId());
+        getStudentDto.setId(student.getStudentId());
         getStudentDto.setGender(student.getGender());
         getStudentDto.setFaculty(student.getFaculty());
         getStudentDto.setStudentType(student.getStudentType());
@@ -55,7 +55,7 @@ public class AccommodationMapper {
 
     public GetAllStaffsDto convertToGetAllStaffsDto(Staff staff) {
         GetAllStaffsDto getAllStaffsDto = new GetAllStaffsDto();
-        getAllStaffsDto.setStaffId(staff.getStaffId());
+        getAllStaffsDto.setId(staff.getId());
         getAllStaffsDto.setName(staff.getName());
         getAllStaffsDto.setEmail(staff.getEmail());
         getAllStaffsDto.setRoomNo(staff.getRoomNo());
@@ -70,7 +70,7 @@ public class AccommodationMapper {
         GetStaffDto getStaffDto = new GetStaffDto();
         getStaffDto.setName(staff.getName());
         getStaffDto.setGender(staff.getGender());
-        getStaffDto.setStaffId(staff.getStaffId());
+        getStaffDto.setId(staff.getStaffId());
         getStaffDto.setEmail(staff.getEmail());
         getStaffDto.setContactNo(staff.getContactNo());
         getStaffDto.setStaffType(staff.getStaffType());
@@ -141,7 +141,7 @@ public class AccommodationMapper {
     }
 
     private String saveFile(MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
+        if (file==null && file.isEmpty()) {
             throw new IllegalArgumentException("Cannot save empty file.");
         }
         String baseDir = "C:\\Assignments_and_Notes\\9. springboot\\Nuha\\accommodation\\";

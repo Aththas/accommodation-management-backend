@@ -1,6 +1,6 @@
 package com.management.accommodation.service.impl;
 
-import com.management.accommodation.dto.requestDto.RoomDto;
+import com.management.accommodation.dto.requestdto.RoomDto;
 import com.management.accommodation.entity.Room;
 import com.management.accommodation.entity.Staff;
 import com.management.accommodation.entity.Student;

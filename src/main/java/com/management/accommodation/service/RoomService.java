@@ -1,6 +1,6 @@
 package com.management.accommodation.service;
 
-import com.management.accommodation.dto.requestDto.RoomDto;
+import com.management.accommodation.dto.requestdto.RoomDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

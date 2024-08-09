@@ -3,7 +3,7 @@ package com.management.accommodation.auth.service;
 import com.management.accommodation.auth.dto.requestDto.ForgotPasswordDto;
 import com.management.accommodation.auth.dto.requestDto.NewPasswordDto;
 import com.management.accommodation.auth.dto.requestDto.PasswordResetDto;
-import com.management.accommodation.dto.requestDto.OtpDto;
+import com.management.accommodation.dto.requestdto.OtpDto;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {

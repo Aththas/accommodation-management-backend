@@ -1,6 +1,6 @@
 package com.management.accommodation.mapper;
 
-import com.management.accommodation.dto.requestDto.RoomDto;
+import com.management.accommodation.dto.requestdto.RoomDto;
 import com.management.accommodation.entity.Room;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +18,7 @@ public class RoomMapper {
 
     public RoomDto convertToDto(Room room) {
         RoomDto roomDto = new RoomDto();
+        roomDto.setId(room.getId());
         roomDto.setRoom(room.getRoom());
         roomDto.setBuilding(room.getBuilding());
         roomDto.setAvailableSpace(room.getAvailableSpace());

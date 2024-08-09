@@ -1,28 +1,23 @@
-package com.management.accommodation.dto.responseDto;
+package com.management.accommodation.dto.responsedto;
 
 import lombok.Data;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
 @Data
-public class GetStudentDto {
-    private String studentId;
+public class GetAllStudentsDto {
+    private Integer id;
     private String name;
     private String email;
-    private Integer contactNo;
-    private String faculty;
     private String roomNo;
-    private String studentType;
-    private String paymentSlip;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
-    private Integer noOfDays;
-    private String status;
-    private String gender;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
+
+    private String status;
 }
